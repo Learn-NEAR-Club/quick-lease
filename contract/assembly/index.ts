@@ -1,13 +1,10 @@
 import { context, logging, u128, RNG, PersistentMap, PersistentVector, ContractPromiseBatch } from 'near-sdk-as'
-// {id: 2, name: "test2", desc: "test", rent: "11", freq: "day", owner: "cryptovaibhav", leaser: "", duration: "", start_date: "", end_date: "", deposit: "100", is_available: true, rating: 2.3, numReviews: 15, img: placeholder },
 
 const enum FreqEnum {
   Day,
   Week,
   Month
 }
-
-const nearInYocto = u128.from(1000000000000000000000000);
 
 @nearBindgen
 class LeaseItem {
@@ -115,11 +112,6 @@ export function return_item(item_id: u32, end_date: u64): bool {
   const item = itemsMap.getSome(item_id);
   assert(item.is_available == false, "Cannot return an item which is already available");
   
-  //calculate rent
-  //const day_diff = calculate_duration(item.start_date, end_date);
-  // const rent_payable = calculate_rent(item.rent, day_diff);
-
-  // assert(rent_payable == context.attachedDeposit, "Rent which needs to be paid: " + rent_payable.toString());
   logging.log("sending rent to owner account"); 
   make_payment(item.owner, context.attachedDeposit);
   
@@ -145,29 +137,4 @@ function make_payment(receiver: string, amount: u128): void{
 function round(value: f64, precision: u16): f64 {
   var multiplier = Math.pow(10, precision || 0);
   return Math.round(value * multiplier) / multiplier;
-}
-
-// function calculate_rent(rent: u128, duration: u64): u128{
-//   const finalRent = u128.mul(rent, u128.from(duration));
-//   return finalRent;
-// }
-
-// function calculate_duration(start_date: u64, end_date: u64): u64{
-//   const diffTime = end_date - start_date;
-//   const diffDays: u64 = u64(Math.ceil(diffTime / (1000 * 60 * 60 * 24))); 
-//   console.log(diffTime.toString() + " milliseconds");
-//   console.log(diffDays.toString() + " days");
-
-//   return diffDays;
-// }
-
-export function dummy(min_dep: u128): void{
-  // const deposit = u128.div(context.attachedDeposit, nearInYocto);
-  const deposit = context.attachedDeposit;
-  logging.log("received deposit of: " + deposit.toString());
-  logging.log("received min dep of: " + min_dep.toString());
-
-  logging.log(deposit > min_dep);
-  assert(deposit > min_dep, "Minimum deposit is 2 NEAR");
-  logging.log("test message");
 }
